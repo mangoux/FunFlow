@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
             return new CaptchaResponse(captchaId, imageData);
 
         } catch (Exception e) {
+            log.error("Failed to generate captcha: {}", e.getMessage(), e);
             throw new BusinessException(Code.SYSTEM_ERROR, "获取图形验证码失败，请稍后重试");
         }
     }

@@ -3,13 +3,16 @@ package com.mango.funflow.service.impl;
 import com.mango.funflow.common.Code;
 import com.mango.funflow.exception.BusinessException;
 import com.mango.funflow.service.EmailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EmailServiceImpl implements EmailService {
     
     @Autowired
@@ -27,7 +30,8 @@ public class EmailServiceImpl implements EmailService {
             message.setSubject("FunFlow 验证码");
             message.setText(buildEmailContent(code));
             mailSender.send(message);
-        } catch (Exception e) {
+        } catch (MailException e) {
+            log.error("发送邮件失败，目标地址：{}", to, e);
             throw new BusinessException(Code.EMAIL_SEND_ERROR, "邮件发送失败，请稍后重试");
         }
     }

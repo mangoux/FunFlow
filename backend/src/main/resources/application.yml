@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: dev
+
   # Redis
   data:
     redis:
@@ -6,3 +9,16 @@ spring:
       port: 6379
       password:
       database: 0
+
+  # Mail
+  mail:
+    host: smtp.163.com
+    port: 465
+    username: # 邮箱
+    password: # SMTP 授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true

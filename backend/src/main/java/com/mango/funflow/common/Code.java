@@ -32,6 +32,16 @@ public class Code {
     public static final int CAPTCHA_VALIDATION_ERROR = 40002;
 
     /**
+     * 邮箱验证码校验失败
+     */
+    public static final int EMAIL_CODE_VALIDATION_ERROR = 40003;
+
+    /**
+     * 该邮箱已被注册
+     */
+    public static final int EMAIL_REGISTERED = 40004;
+
+    /**
      * 邮件发送服务不可用（配置填写有误）
      */
     public static final int EMAIL_SEND_ERROR = 50001;

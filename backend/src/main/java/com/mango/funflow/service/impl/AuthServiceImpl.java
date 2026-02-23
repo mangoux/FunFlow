@@ -15,6 +15,7 @@ import com.mango.funflow.service.AuthService;
 import com.mango.funflow.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -195,13 +197,20 @@ public class AuthServiceImpl implements AuthService {
                 .nickname(extractNameFromEmail(email))  // 昵称从邮箱中提取
                 .username(email)    // 用户名默认使用邮箱
                 .bio("")
+                .followingCount(0)
+                .followerCount(0)
+                .totalLikesReceived(0L)
+                .createdAt(LocalDateTime.now())
                 .status(User.Status.NORMAL.getCode())
                 .build();
 
         try {
             userMapper.insert(user);
-        } catch (Exception e) {
+        } catch (DuplicateKeyException e) {
             throw new BusinessException(Code.EMAIL_REGISTERED, "该邮箱已被注册");
+        } catch (Exception e) {
+            log.error("Failed to create user for email: {}", email, e);
+            throw new BusinessException(Code.SYSTEM_ERROR, "用户注册失败，请稍后重试");
         }
 
         log.info("用户注册成功，邮箱: {}", email);

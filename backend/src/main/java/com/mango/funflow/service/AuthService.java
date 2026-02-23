@@ -1,5 +1,6 @@
 package com.mango.funflow.service;
 
+import com.mango.funflow.dto.request.RegisterRequest;
 import com.mango.funflow.dto.request.SendEmailCodeRequest;
 import com.mango.funflow.dto.response.CaptchaResponse;
 
@@ -18,4 +19,11 @@ public interface AuthService {
      * @param request 发送邮箱验证码请求
      */
     void sendEmailCode(SendEmailCodeRequest request);
+
+    /**
+     * 用户注册
+     *
+     * @param request 注册请求
+     */
+    void register(RegisterRequest request);
 }

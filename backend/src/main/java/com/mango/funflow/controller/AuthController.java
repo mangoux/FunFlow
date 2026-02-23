@@ -1,6 +1,7 @@
 package com.mango.funflow.controller;
 
 import com.mango.funflow.common.Result;
+import com.mango.funflow.dto.request.RegisterRequest;
 import com.mango.funflow.dto.request.SendEmailCodeRequest;
 import com.mango.funflow.dto.response.CaptchaResponse;
 import com.mango.funflow.service.AuthService;
@@ -41,5 +42,17 @@ public class AuthController {
     public Result<Void> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
         authService.sendEmailCode(request);
         return Result.success("邮箱验证码已发送，请注意查收", null);
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param request 注册请求
+     * @return 结果
+     */
+    @PostMapping("/register")
+    public Result<Void> register(@Valid @RequestBody RegisterRequest request) {
+        authService.register(request);
+        return Result.success("账号注册成功", null);
     }
 }

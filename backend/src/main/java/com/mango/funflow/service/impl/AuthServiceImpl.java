@@ -5,14 +5,17 @@ import cn.hutool.crypto.digest.BCrypt;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.mango.funflow.common.Code;
 import com.mango.funflow.common.RedisConstant;
+import com.mango.funflow.dto.request.LoginRequest;
 import com.mango.funflow.dto.request.RegisterRequest;
 import com.mango.funflow.dto.request.SendEmailCodeRequest;
 import com.mango.funflow.dto.response.CaptchaResponse;
+import com.mango.funflow.dto.response.LoginResponse;
 import com.mango.funflow.entity.User;
 import com.mango.funflow.exception.BusinessException;
 import com.mango.funflow.mapper.UserMapper;
 import com.mango.funflow.service.AuthService;
 import com.mango.funflow.service.EmailService;
+import com.mango.funflow.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -229,5 +232,41 @@ public class AuthServiceImpl implements AuthService {
             return email.substring(0, atIndex);
         }
         throw new BusinessException(Code.VALIDATION_ERROR, "邮箱格式不正确");
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        String email = request.getEmail().toLowerCase();
+        String password = request.getPassword();
+        String captchaId = request.getCaptchaId();
+        String captchaText = request.getCaptchaText();
+
+        // 1. 校验图形验证码
+        validateCaptcha(captchaId, captchaText);
+
+        // 2. 根据邮箱查询用户
+        User user = userMapper.findByEmail(email);
+        if (user == null) {
+            throw new BusinessException(Code.EMAIL_PASSWORD_ERROR, "账号或密码错误，请检查邮箱是否正确");
+        }
+
+        // 3. 校验密码
+        if (!BCrypt.checkpw(password, user.getPasswordHash())) {
+            throw new BusinessException(Code.EMAIL_PASSWORD_ERROR, "账号或密码错误");
+        }
+
+        // 4. 校验账号状态
+        if (!User.Status.NORMAL.getCode().equals(user.getStatus())) {
+            throw new BusinessException(Code.USER_STATUS_ERROR, "账号状态异常，暂时无法登陆");
+        }
+
+        // 5. 更新最后登录时间
+        userMapper.updateLastLoginTime(user.getUserId());
+
+        // 6. 生成 JWT 令牌
+        String accessToken = JWTUtil.generateToken(user.getUserId());
+
+        log.info("用户登录成功，userId: {}, email: {}", user.getUserId(), email);
+        return new LoginResponse(accessToken);
     }
 }

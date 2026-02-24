@@ -42,6 +42,16 @@ public class Code {
     public static final int EMAIL_REGISTERED = 40004;
 
     /**
+     * 账号密码不匹配
+     */
+    public static final int EMAIL_PASSWORD_ERROR = 40005;
+
+    /**
+     * 账号状态异常
+     */
+    public static final int USER_STATUS_ERROR = 40006;
+
+    /**
      * 邮件发送服务不可用（配置填写有误）
      */
     public static final int EMAIL_SEND_ERROR = 50001;

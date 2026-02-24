@@ -30,3 +30,19 @@ spring:
     url:
     username:
     password:
+
+# JWT
+jwt:
+  secret-key: funflow-jwt-secret-key-change-in-production
+  expire-time: 604800000  # 7天 = 7 * 24 * 60 * 60 * 1000
+
+# MyBatis
+mybatis:
+  type-aliases-package: com.mango.funflow.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# Logging
+logging:
+  level:
+    com.mango.funflow.mapper: debug  # 开启 SQL 日志打印

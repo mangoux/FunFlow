@@ -1,8 +1,10 @@
 package com.mango.funflow.service;
 
+import com.mango.funflow.dto.request.LoginRequest;
 import com.mango.funflow.dto.request.RegisterRequest;
 import com.mango.funflow.dto.request.SendEmailCodeRequest;
 import com.mango.funflow.dto.response.CaptchaResponse;
+import com.mango.funflow.dto.response.LoginResponse;
 
 public interface AuthService {
 
@@ -26,4 +28,12 @@ public interface AuthService {
      * @param request 注册请求
      */
     void register(RegisterRequest request);
+
+    /**
+     * 用户登录
+     *
+     * @param request 登录请求
+     * @return 登录响应（包含 accessToken）
+     */
+    LoginResponse login(LoginRequest request);
 }

@@ -1,9 +1,11 @@
 package com.mango.funflow.controller;
 
 import com.mango.funflow.common.Result;
+import com.mango.funflow.dto.request.LoginRequest;
 import com.mango.funflow.dto.request.RegisterRequest;
 import com.mango.funflow.dto.request.SendEmailCodeRequest;
 import com.mango.funflow.dto.response.CaptchaResponse;
+import com.mango.funflow.dto.response.LoginResponse;
 import com.mango.funflow.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +56,17 @@ public class AuthController {
     public Result<Void> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
         return Result.success("账号注册成功", null);
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param request 登录请求
+     * @return 登录响应（返回 accessToken）
+     */
+    @PostMapping("/login")
+    public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+        return Result.success("登录成功", response);
     }
 }

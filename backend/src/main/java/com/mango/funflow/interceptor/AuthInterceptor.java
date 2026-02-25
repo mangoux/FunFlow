@@ -1,6 +1,6 @@
 package com.mango.funflow.interceptor;
 
-import com.mango.funflow.common.UserContext;
+import com.mango.funflow.util.UserContext;
 import com.mango.funflow.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,26 +27,28 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 校验 Authorization 格式
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            return sendUnauthorized(response);
         }
 
         // 验证 Token 是否有效
         String token = authHeader.substring(BEARER_PREFIX.length());
         if (!JWTUtil.isValid(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            return sendUnauthorized(response);
         }
 
         // 将 userId 存储到 ThreadLocal
         Long userId = JWTUtil.getUserId(token);
         if (userId == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            return sendUnauthorized(response);
         }
         UserContext.setUserId(userId);
 
         return true;
+    }
+
+    private boolean sendUnauthorized(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return false;
     }
 
     @Override

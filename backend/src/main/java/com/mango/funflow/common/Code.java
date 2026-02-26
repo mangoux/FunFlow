@@ -17,6 +17,16 @@ public class Code {
     public static final int ERROR = 400;
 
     /**
+     * 未认证
+     */
+    public static final int UNAUTHORIZED = 401;
+
+    /**
+     * 请求资源不存在
+     */
+    public static final int NOT_FOUND = 404;
+
+    /**
      * 默认服务端错误
      */
     public static final int SYSTEM_ERROR = 500;

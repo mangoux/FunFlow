@@ -1,14 +1,20 @@
 package com.mango.funflow.config;
 
+import com.mango.funflow.interceptor.AuthInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private AuthInterceptor authInterceptor;
 
     /**
      * 设置 Controller 统一前缀
@@ -29,5 +35,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")  // 允许所有请求头
                 .allowCredentials(true)  // 允许携带凭证（cookie等）
                 .maxAge(3600);  // 预检请求的缓存时间（秒）
+    }
+
+    /**
+     * 注册拦截器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/auth/**");   // 排除不需要认证的接口
     }
 }

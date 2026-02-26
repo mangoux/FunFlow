@@ -42,4 +42,15 @@ public interface UserMapper {
      */
     @Update("UPDATE `users` SET last_login_at = NOW() WHERE user_id = #{userId}")
     void updateLastLoginTime(@Param("userId") Long userId);
+
+    /**
+     * 根据用户ID查询用户信息（用于个人资料展示）
+     *
+     * @param userId 用户ID
+     * @return 用户实体
+     */
+    @Select("SELECT user_id, username, nickname, avatar_url, bio, " +
+            "following_count, follower_count, total_likes_received " +
+            "FROM `users` WHERE user_id = #{userId}")
+    User findById(@Param("userId") Long userId);
 }

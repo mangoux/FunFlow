@@ -1,12 +1,12 @@
 package com.mango.funflow.controller;
 
 import com.mango.funflow.common.Result;
+import com.mango.funflow.dto.response.AvatarUploadResponse;
 import com.mango.funflow.dto.response.UserProfileResponse;
 import com.mango.funflow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户信息管理相关接口
@@ -27,5 +27,17 @@ public class UserController {
     public Result<UserProfileResponse> getProfile() {
         UserProfileResponse profile = userService.getProfile();
         return Result.success(profile);
+    }
+
+    /**
+     * 上传用户头像
+     *
+     * @param file 头像文件
+     * @return 头像 URL
+     */
+    @PostMapping("/profile/avatar")
+    public Result<AvatarUploadResponse> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        AvatarUploadResponse avatarUrl = userService.uploadAvatar(file);
+        return Result.success(avatarUrl);
     }
 }

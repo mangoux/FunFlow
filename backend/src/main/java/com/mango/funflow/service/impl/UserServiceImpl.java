@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 2. 校验文件
-        String extension = "jpg";
+        String extension;
         try {
             extension = MultipartFileUtil.validateImageAndGetExtension(file, 5 * 1024 * 1024);
         } catch (IllegalArgumentException e) {

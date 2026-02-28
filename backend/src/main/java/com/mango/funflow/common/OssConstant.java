@@ -21,7 +21,7 @@ public class OssConstant {
      */
     public static String getAvatarFileName(Long userId, String extension) {
         String uuid = UUID.randomUUID().toString().replace("-", "");
-        return String.format("%s/%d/%s.%s",
+        return String.format("%s/%s/%s.%s",
                 AVATAR_BASE_PATH,
                 userId,
                 uuid,

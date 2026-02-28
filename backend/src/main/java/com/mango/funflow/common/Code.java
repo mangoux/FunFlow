@@ -62,6 +62,11 @@ public class Code {
     public static final int USER_STATUS_ERROR = 40006;
 
     /**
+     * 文件格式校验失败
+     */
+    public static final int FILE_VALIDATION_ERROR = 40007;
+
+    /**
      * 邮件发送服务不可用（配置填写有误）
      */
     public static final int EMAIL_SEND_ERROR = 50001;

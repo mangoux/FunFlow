@@ -103,7 +103,6 @@ public class UserServiceImpl implements UserService {
         if (request.getAvatarUrl() != null && !request.getAvatarUrl().isEmpty()) {
             // 校验路径格式：{oss_prefix}/avatar/{userId}/xxx
             String stdUrlPrefix = ossConfig.getUrlPrefix() + OssConstant.getAvatarPathPrefix(userId);
-            log.info(stdUrlPrefix);
             if (!request.getAvatarUrl().startsWith(stdUrlPrefix)) {
                 throw new BusinessException(Code.UPDATE_PROFILE_PARAM_ERROR, "头像 URL 格式不正确");
             }

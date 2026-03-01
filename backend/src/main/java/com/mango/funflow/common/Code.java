@@ -67,6 +67,11 @@ public class Code {
     public static final int FILE_VALIDATION_ERROR = 40007;
 
     /**
+     * 更新用户资料参数错误
+     */
+    public static final int UPDATE_PROFILE_PARAM_ERROR = 40008;
+
+    /**
      * 邮件发送服务不可用（配置填写有误）
      */
     public static final int EMAIL_SEND_ERROR = 50001;

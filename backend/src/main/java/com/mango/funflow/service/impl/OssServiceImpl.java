@@ -47,7 +47,7 @@ public class OssServiceImpl implements OssService {
             ossClient.putObject(putObjectRequest);
 
             // 返回文件访问 URL
-            return "https://" + ossConfig.getBucketName() + "." + ossConfig.getEndpoint() + "/" + fileName;
+            return ossConfig.getUrlPrefix() + fileName;
 
         } catch (Exception e) {
             throw new BusinessException(Code.SYSTEM_ERROR, "文件上传失败：" + e.getMessage());

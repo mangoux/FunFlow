@@ -42,4 +42,12 @@ public class OssConfig {
     public OSS ossClient() {
         return new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
     }
+
+    /**
+     * 获取 OSS 路径前缀
+     * @return OSS 路径前缀
+     */
+    public String getUrlPrefix() {
+        return "https://" + bucketName + "." + endpoint + "/";
+    }
 }

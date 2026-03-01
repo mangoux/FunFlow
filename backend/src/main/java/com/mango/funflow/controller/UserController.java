@@ -1,9 +1,11 @@
 package com.mango.funflow.controller;
 
 import com.mango.funflow.common.Result;
+import com.mango.funflow.dto.request.UpdateProfileRequest;
 import com.mango.funflow.dto.response.AvatarUploadResponse;
 import com.mango.funflow.dto.response.UserProfileResponse;
 import com.mango.funflow.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,5 +41,17 @@ public class UserController {
     public Result<AvatarUploadResponse> uploadAvatar(@RequestParam("file") MultipartFile file) {
         AvatarUploadResponse avatarUrl = userService.uploadAvatar(file);
         return Result.success(avatarUrl);
+    }
+
+    /**
+     * 更新当前登录用户的个人资料
+     *
+     * @param request 更新请求
+     * @return 更新后的用户资料
+     */
+    @PutMapping("/profile")
+    public Result<UserProfileResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
+        UserProfileResponse profile = userService.updateProfile(request);
+        return Result.success("更新成功！", profile);
     }
 }

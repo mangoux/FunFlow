@@ -53,4 +53,23 @@ public interface UserMapper {
             "following_count, follower_count, total_likes_received " +
             "FROM `users` WHERE user_id = #{userId}")
     User findById(@Param("userId") Long userId);
+
+    /**
+     * 更新用户资料
+     * 使用动态 SQL，只更新非空字段
+     *
+     * @param user 用户实体（包含 userId 和需要更新的字段）
+     * @return 影响的行数
+     */
+    @Update("<script>" +
+            "UPDATE `users` " +
+            "<set>" +
+            "  <if test='username != null'>username = #{username},</if>" +
+            "  <if test='nickname != null'>nickname = #{nickname},</if>" +
+            "  <if test='avatarUrl != null'>avatar_url = #{avatarUrl},</if>" +
+            "  <if test='bio != null'>bio = #{bio},</if>" +
+            "</set>" +
+            "WHERE user_id = #{userId}" +
+            "</script>")
+    int updateProfile(User user);
 }

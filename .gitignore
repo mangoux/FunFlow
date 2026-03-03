@@ -14,3 +14,6 @@ dist/
 test/
 application-dev.yml
 application-prod.yml
+
+# front
+node_modules/

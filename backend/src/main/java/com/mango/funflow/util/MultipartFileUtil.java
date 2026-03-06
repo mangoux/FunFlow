@@ -11,11 +11,12 @@ import java.util.Set;
  */
 public class MultipartFileUtil {
 
-    /**
-     * 支持的图片格式集合
-     */
     private static final Set<String> SUPPORTED_IMAGE_EXTENSIONS = new HashSet<>(
             Arrays.asList("jpg", "jpeg", "png")
+    );
+
+    private static final Set<String> SUPPORTED_VIDEO_EXTENSIONS = new HashSet<>(
+            Arrays.asList("mp4", "mov", "avi")
     );
 
     /**
@@ -52,6 +53,35 @@ public class MultipartFileUtil {
             throw new IllegalArgumentException("不支持的图片格式，仅支持：jpg、jpeg、png");
         }
 
+        return extension.toLowerCase();
+    }
+
+    /**
+     * 校验视频格式并返回文件扩展名
+     *
+     * @param file    要校验的视频文件
+     * @param maxSize 最大允许的文件大小（字节）
+     * @return 文件扩展名（小写，不包含点）
+     * @throws IllegalArgumentException 当文件为空、格式不支持或超过大小时抛出
+     */
+    public static String validateVideoAndGetExtension(MultipartFile file, long maxSize) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("视频文件不能为空");
+        }
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("文件大小不能超过 " + formatFileSize(maxSize));
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new IllegalArgumentException("文件名不能为空");
+        }
+        String extension = getFileExtension(originalFilename);
+        if (extension == null) {
+            throw new IllegalArgumentException("无法获取文件扩展名");
+        }
+        if (!SUPPORTED_VIDEO_EXTENSIONS.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("不支持的视频格式，仅支持：mp4、mov、avi");
+        }
         return extension.toLowerCase();
     }
 

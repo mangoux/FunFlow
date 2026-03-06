@@ -17,6 +17,7 @@ import com.mango.funflow.util.MultipartFileUtil;
 import com.mango.funflow.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -103,6 +104,7 @@ public class VideoServiceImpl implements VideoService {
                 coverUrl = ossService.uploadFile(coverFile, coverFileName);
             } catch (Exception e) {
                 log.error("封面文件上传失败 [userId: {}]: {}", userId, e.getMessage(), e);
+                // 避免孤儿文件需要清理删除已上传的视频文件
                 throw new BusinessException(Code.SYSTEM_ERROR, "文件上传失败");
             }
         }
@@ -125,8 +127,13 @@ public class VideoServiceImpl implements VideoService {
             Tag tag = tagMapper.findByName(tagName);
             if (tag == null) {
                 tag = Tag.builder().tagName(tagName).build();
-                tagMapper.insert(tag);
-                log.info("新标签创建成功 [tagId: {}, tagName: {}]", tag.getTagId(), tagName);
+                try {
+                    tagMapper.insert(tag);
+                    log.info("新标签创建成功 [tagId: {}, tagName: {}]", tag.getTagId(), tagName);
+                } catch (DuplicateKeyException e) {
+                    // 竞争插入新标签
+                    tag = tagMapper.findByName(tagName);
+                }
             }
             tagMapper.incrementUseCount(tag.getTagId());
 

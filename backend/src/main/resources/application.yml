@@ -2,6 +2,13 @@ spring:
   profiles:
     active: dev
 
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 300MB  # 单个文件最大
+      max-request-size: 500MB  # 请求最大
+
   # Redis
   data:
     redis:

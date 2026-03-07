@@ -1,5 +1,6 @@
 package com.mango.funflow.service;
 
+import com.mango.funflow.dto.response.UserVideoListResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -18,4 +19,13 @@ public interface VideoService {
      */
     void createVideo(MultipartFile videoFile, MultipartFile coverFile,
                      String title, String tags, Integer isPublic);
+
+    /**
+     * 获取当前用户的视频列表（分页，不含违规视频，按创建时间倒序）
+     *
+     * @param page     页码，从 1 开始，默认 1
+     * @param pageSize 每页数量，默认 20，最大 50
+     * @return 用户视频列表响应
+     */
+    UserVideoListResponse getUserVideos(Integer page, Integer pageSize);
 }

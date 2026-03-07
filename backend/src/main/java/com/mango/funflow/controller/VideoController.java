@@ -1,12 +1,10 @@
 package com.mango.funflow.controller;
 
 import com.mango.funflow.common.Result;
+import com.mango.funflow.dto.response.UserVideoListResponse;
 import com.mango.funflow.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -18,6 +16,21 @@ public class VideoController {
 
     @Autowired
     private VideoService videoService;
+
+    /**
+     * 获取当前用户的作品列表（分页）
+     *
+     * @param page     页码，从 1 开始，默认 1
+     * @param pageSize 每页数量，默认 20，最大 50
+     * @return 用户视频列表
+     */
+    @GetMapping
+    public Result<UserVideoListResponse> getUserVideos(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        UserVideoListResponse response = videoService.getUserVideos(page, pageSize);
+        return Result.success(response);
+    }
 
     /**
      * 作品创作接口

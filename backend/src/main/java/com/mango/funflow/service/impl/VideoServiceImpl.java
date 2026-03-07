@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mango.funflow.common.Code;
 import com.mango.funflow.common.OssConstant;
+import com.mango.funflow.dto.response.UserVideoListResponse;
+import com.mango.funflow.dto.response.VideoItemResponse;
 import com.mango.funflow.entity.Tag;
 import com.mango.funflow.entity.Video;
 import com.mango.funflow.entity.VideoTag;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -143,6 +146,70 @@ public class VideoServiceImpl implements VideoService {
                     .build();
             videoTagMapper.insert(videoTag);
         }
+    }
+
+    @Override
+    public UserVideoListResponse getUserVideos(Integer page, Integer pageSize) {
+        Long userId = UserContext.getUserId();
+        if (userId == null) {
+            throw new BusinessException(Code.UNAUTHORIZED, "登录状态认证失败");
+        }
+
+        // 参数默认值处理
+        if (page == null) page = 1;
+        if (pageSize == null) pageSize = 20;
+
+        // 校验页码
+        if (page <= 0) {
+            throw new BusinessException(Code.VALIDATION_ERROR, "页码必须为大于 0 的整数");
+        }
+        // 每页数量限制在 1～50 之间
+        pageSize = Math.min(Math.max(pageSize, 1), 50);
+
+        int offset = (page - 1) * pageSize;
+        long total;
+        List<Video> videos;
+        try {
+            total = videoMapper.countByUserIdExcludeViolation(userId);
+            videos = videoMapper.findByUserIdExcludeViolation(userId, offset, pageSize);
+        } catch (Exception e) {
+            log.error("查询用户视频列表失败 [userId: {}]: {}", userId, e.getMessage(), e);
+            throw new BusinessException(Code.SYSTEM_ERROR, "获取用户视频列表失败");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final int finalPageSize = pageSize;
+        List<VideoItemResponse> videoItems = videos.stream().map(v -> {
+            List<String> tags;
+            try {
+                tags = videoTagMapper.findTagNamesByVideoId(v.getVideoId());
+            } catch (Exception e) {
+                log.error("查询视频标签失败 [videoId: {}]: {}", v.getVideoId(), e.getMessage(), e);
+                tags = List.of();
+            }
+            String coverUrl = v.getCoverUrl() != null ? v.getCoverUrl() : "";
+            String createTime = v.getCreatedAt().format(formatter);
+            return VideoItemResponse.builder()
+                    .videoId(v.getVideoId())
+                    .title(v.getTitle())
+                    .coverUrl(coverUrl)
+                    .videoUrl(v.getVideoUrl())
+                    .tags(tags)
+                    .viewCount(v.getViewCount())
+                    .likeCount(v.getLikeCount())
+                    .status(v.getStatus())
+                    .isPublic(v.getIsPublic())
+                    .createTime(createTime)
+                    .build();
+        }).toList();
+
+        return UserVideoListResponse.builder()
+                .userId(userId)
+                .total(total)
+                .page(page)
+                .pageSize(finalPageSize)
+                .videos(videoItems)
+                .build();
     }
 
     /**
